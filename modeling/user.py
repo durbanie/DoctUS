@@ -9,7 +9,7 @@ class User:
     def __init__(self, id, political_bias, affinity_range, tolerance_range):
         """
         Constructor used to create a new instance of a User.
-        
+
         Args:
             id: An `int` specifying the id of the user.
             political_bias: A `float` between -1. and 1. defining the users
@@ -25,14 +25,33 @@ class User:
         self._id = id
         self._political_bias = political_bias
         self._affinity_range = affinity_range
-        self._tolerance = tolerance
+        self._tolerance_range = tolerance_range
+
+    def GetId(self):
+        """
+        Gets the user's ID.
+
+        Returns:
+            An `int` specifying this user's ID.
+        """
+        return self._id
+
+    def GetPoliticalBias(self):
+        """
+        Returns the user's political bias so that users can meaningfully
+        interact with it.
+
+        Returns:
+            A `float` between -1. and 1. defining the user's political bias.
+        """
+        return self._political_bias
 
     def InteractWithPost(self, post):
         """
         Provided a post, determines whether or not to upvote, downvote, or
         ignore, based on the post's leanings, and this user's affinity_range
         and/or tolerance.
-        
+
         Args:
             post: The `Post` that this user will vote on.
         """
@@ -45,4 +64,4 @@ class User:
                 post.VoteFor(self._id)
             if political_difference > self._tolerance_range:
                 post.VoteAgainst(self._id)
-        
+
