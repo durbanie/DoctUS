@@ -3,40 +3,34 @@ import unittest
 
 class PostTest(unittest.TestCase):
     def setUp(self):
-        self.post = Post(0, 0.)
+        self.post = Post(1, 0.5, "Test content.")
 
     def test_Constructor(self):
-        self.assertEqual(self.post.GetPoliticalBias(), 0.,
-                         "Political bias not correctly initialized.")
-        self.assertEqual(self.post.GetVisibilityScore(), 0,
-                         "Visibility score not correctly initialized.")
+        self.assertEquals(self.post.id, 1, "ID not correctly initialized.")
+        self.assertEquals(self.post.political_bias, 0.5,
+                          "Political bias not correctly initialized.")
+        self.assertEquals(self.post.visibility_score, 0,
+                          "Visibility score not correctly initialized.")
         self.assertFalse(self.post.HasUserVoted(123),
                          "HasUserVoted should return FALSE on initialization")
+        self.assertEquals(self.post.content, "Test content.",
+                          "Content not correctly initialized.")
 
-    def test_GetPoliticalBias(self):
-        post = Post(1, 0.5)
-        self.assertEqual(post.GetPoliticalBias(), 0.5,
-                         "Political bias not correctly initialized.")
+    def test_Voting(self):
+        ayes = 49
+        nays = 51
+        for i in range(ayes):
+            id = i
+            self.post.VoteFor(id)
+        for i in range(nays):
+            id = ayes + i
+            self.post.VoteAgainst(id)
+        self.assertEquals(self.post.visibility_score, -2, "The nays have it.")
 
-    def test_VoteFor(self):
+    def test_VotingException(self):
         self.post.VoteFor(123)
-        self.assertEquals(self.post.GetVisibilityScore(), 1,
-                          "VoteFor should increment visibility score.")
-        self.assertTrue(self.post.HasUserVoted(123),
-                        "HasUserVoted should return TRUE after voting.")
-        self.assertFalse(
-            self.post.HasUserVoted(456),
-            "HasUserVoted should return FALSE for non-voting user.")
-
-    def test_VoteAgainst(self):
-        self.post.VoteAgainst(123)
-        self.assertEquals(self.post.GetVisibilityScore(), -1,
-                          "VoteAgainst should decrement visibility score.")
-        self.assertTrue(self.post.HasUserVoted(123),
-                        "HasUserVoted should return TRUE after voting.")
-        self.assertFalse(
-            self.post.HasUserVoted(456),
-            "HasUserVoted should return FALSE for non-voting user.")
+        with self.assertRaises(Exception):
+            self.post.VoteAgainst(123)
 
 if __name__ == '__main__':
     unittest.main()

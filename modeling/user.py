@@ -1,5 +1,5 @@
 # A 'User' interacts with the Forum by subscribing to Boards, making Posts,
-# adding Comments, and voting.
+# adding Comments, and voting on/interacting with media.
 
 class User:
     """
@@ -27,41 +27,32 @@ class User:
         self._affinity_range = affinity_range
         self._tolerance_range = tolerance_range
 
-    def GetId(self):
-        """
-        Gets the user's ID.
-
-        Returns:
-            An `int` specifying this user's ID.
-        """
+    @property
+    def id(self):
+        """The user's ID (a positive `int`)."""
         return self._id
 
-    def GetPoliticalBias(self):
-        """
-        Returns the user's political bias so that users can meaningfully
-        interact with it.
-
-        Returns:
-            A `float` between -1. and 1. defining the user's political bias.
-        """
+    @property
+    def political_bias(self):
+        """The user's political bias (a `float` between -1. and 1.)."""
         return self._political_bias
 
-    def InteractWithPost(self, post):
+    def InteractWithMedium(self, media):
         """
-        Provided a post, determines whether or not to upvote, downvote, or
-        ignore, based on the post's leanings, and this user's affinity_range
-        and/or tolerance.
+        Provided media, determines whether or not to vote for, against, or
+        ignore, based on the media's leanings, and this user's affinity_range
+        and/or tolerance_range.
 
         Args:
-            post: The `Post` that this user will vote on.
+            media: The `Media` that this user will vote on.
         """
 
         # Don't let the user vote more than once.
-        if not post.HasUserVoted(self._id):
+        if not media.HasUserVoted(self.id):
             political_difference = abs(
-                post.GetPoliticalBias() - self._political_bias)
+                media.political_bias - self.political_bias)
             if political_difference < self._affinity_range:
-                post.VoteFor(self._id)
+                media.VoteFor(self.id)
             if political_difference > self._tolerance_range:
-                post.VoteAgainst(self._id)
+                media.VoteAgainst(self.id)
 

@@ -1,4 +1,5 @@
 from user import User
+from medium import Medium
 from post import Post
 import unittest
 
@@ -14,91 +15,100 @@ class UserTest(unittest.TestCase):
         self.rightUser = User(RIGHT_ID, 0.5, 0.1, 0.6)
 
     def test_Constructor(self):
-        self.assertEquals(self.rightUser.GetId(), RIGHT_ID,
+        self.assertEquals(self.rightUser.id, RIGHT_ID,
                           "Right-leaning User ID incorrect.")
-        self.assertEquals(self.rightUser.GetPoliticalBias(), 0.5,
+        self.assertEquals(self.rightUser.political_bias, 0.5,
                           "Right-leaning User political bias incorrect.")
-        self.assertEquals(self.centerUser.GetId(), CENTER_ID,
+        self.assertEquals(self.centerUser.id, CENTER_ID,
                           "Centrist User ID incorrect.")
-        self.assertEquals(self.centerUser.GetPoliticalBias(), 0.,
+        self.assertEquals(self.centerUser.political_bias, 0.,
                           "Centrist User political bias incorrect.")
-        self.assertEquals(self.leftUser.GetId(), LEFT_ID,
+        self.assertEquals(self.leftUser.id, LEFT_ID,
                           "Left-leaning User ID incorrect.")
-        self.assertEquals(self.leftUser.GetPoliticalBias(), -0.5,
+        self.assertEquals(self.leftUser.political_bias, -0.5,
                           "Left-leaning User political bias incorrect.")
 
-    def test_InteractWithPost_farLeftPost(self):
-        farLeftPost = Post(0, -0.85)
-        self.leftUser.InteractWithPost(farLeftPost)
-        self.assertEquals(farLeftPost.GetVisibilityScore(), 0,
+    def test_InteractWithMedium_farLeftPost(self):
+        farLeftPost = Post(0, -0.85, "Eat the rich!")
+        self.leftUser.InteractWithMedium(farLeftPost)
+        self.assertEquals(farLeftPost.visibility_score, 0,
                           "LeftUser should ignore farLeftPost.")
-        self.centerUser.InteractWithPost(farLeftPost)
-        self.assertEquals(farLeftPost.GetVisibilityScore(), -1,
+        self.centerUser.InteractWithMedium(farLeftPost)
+        self.assertEquals(farLeftPost.visibility_score, -1,
                           "CenterUser should vote against farLeftPost.")
-        self.rightUser.InteractWithPost(farLeftPost)
-        self.assertEquals(farLeftPost.GetVisibilityScore(), -2,
+        self.rightUser.InteractWithMedium(farLeftPost)
+        self.assertEquals(farLeftPost.visibility_score, -2,
                           "RightUser should vote against farLeftPost.")
 
-    def test_InteractWithPost_leftPost(self):
-        leftPost = Post(1, -0.55)
-        self.leftUser.InteractWithPost(leftPost)
-        self.assertEquals(leftPost.GetVisibilityScore(), 1,
+    def test_InteractWithMedium_leftPost(self):
+        leftPost = Post(1, -0.55, "I just want affordable healthcare.")
+        self.leftUser.InteractWithMedium(leftPost)
+        self.assertEquals(leftPost.visibility_score, 1,
                           "LeftUser should vote for leftPost.")
-        self.centerUser.InteractWithPost(leftPost)
-        self.assertEquals(leftPost.GetVisibilityScore(), 1,
+        self.centerUser.InteractWithMedium(leftPost)
+        self.assertEquals(leftPost.visibility_score, 1,
                           "CenterUser should ignore leftPost.")
-        self.rightUser.InteractWithPost(leftPost)
-        self.assertEquals(leftPost.GetVisibilityScore(), 0,
+        self.rightUser.InteractWithMedium(leftPost)
+        self.assertEquals(leftPost.visibility_score, 0,
                           "RightUser should vote against leftPost.")
 
-    def test_InteractWithPost_centerLeftPost(self):
-        centerLeftPost = Post(2, -0.05)
-        self.leftUser.InteractWithPost(centerLeftPost)
-        self.assertEquals(centerLeftPost.GetVisibilityScore(), 0,
+    def test_InteractWithMedium_centerLeftPost(self):
+        centerLeftPost = Post(
+            2, -0.05, "Capitalism should be constrained for the public good.")
+        self.leftUser.InteractWithMedium(centerLeftPost)
+        self.assertEquals(centerLeftPost.visibility_score, 0,
                           "LeftUser should ignore centerLeftPost.")
-        self.centerUser.InteractWithPost(centerLeftPost)
-        self.assertEquals(centerLeftPost.GetVisibilityScore(), 1,
+        self.centerUser.InteractWithMedium(centerLeftPost)
+        self.assertEquals(centerLeftPost.visibility_score, 1,
                           "CenterUser should vote for centerLeftPost.")
-        self.rightUser.InteractWithPost(centerLeftPost)
-        self.assertEquals(centerLeftPost.GetVisibilityScore(), 1,
+        self.rightUser.InteractWithMedium(centerLeftPost)
+        self.assertEquals(centerLeftPost.visibility_score, 1,
                           "RightUser should ignore centerLeftPost.")
 
-    def test_InteractWithPost_centerRightPost(self):
-        centerRightPost = Post(3, 0.05)
-        self.leftUser.InteractWithPost(centerRightPost)
-        self.assertEquals(centerRightPost.GetVisibilityScore(), 0,
+    def test_InteractWithMedium_centerRightPost(self):
+        centerRightPost = Post(
+            3, 0.05, "We should examine the merits of a flat tax system.")
+        self.leftUser.InteractWithMedium(centerRightPost)
+        self.assertEquals(centerRightPost.visibility_score, 0,
                           "LeftUser should ignore centerRightPost.")
-        self.centerUser.InteractWithPost(centerRightPost)
-        self.assertEquals(centerRightPost.GetVisibilityScore(), 1,
+        self.centerUser.InteractWithMedium(centerRightPost)
+        self.assertEquals(centerRightPost.visibility_score, 1,
                           "CenterUser should vote for centerRightPost.")
-        self.rightUser.InteractWithPost(centerRightPost)
-        self.assertEquals(centerRightPost.GetVisibilityScore(), 1,
+        self.rightUser.InteractWithMedium(centerRightPost)
+        self.assertEquals(centerRightPost.visibility_score, 1,
                           "RightUser should ignore centerRightPost.")
 
-    def test_InteractWithPost_rightPost(self):
-        rightPost = Post(4, 0.55)
-        self.leftUser.InteractWithPost(rightPost)
-        self.assertEquals(rightPost.GetVisibilityScore(), -1,
+    def test_InteractWithMedium_rightPost(self):
+        rightPost = Post(4, 0.55, "I just want lower taxes.")
+        self.leftUser.InteractWithMedium(rightPost)
+        self.assertEquals(rightPost.visibility_score, -1,
                           "LeftUser should vote against rightPost.")
-        self.centerUser.InteractWithPost(rightPost)
-        self.assertEquals(rightPost.GetVisibilityScore(), -1,
+        self.centerUser.InteractWithMedium(rightPost)
+        self.assertEquals(rightPost.visibility_score, -1,
                           "CenterUser should ignore rightPost.")
-        self.rightUser.InteractWithPost(rightPost)
-        self.assertEquals(rightPost.GetVisibilityScore(), 0,
+        self.rightUser.InteractWithMedium(rightPost)
+        self.assertEquals(rightPost.visibility_score, 0,
                           "RightUser should ignore rightPost.")
 
-    def test_InteractWithPost_farRightPost(self):
-        farRightPost = Post(5, 0.85)
-        self.leftUser.InteractWithPost(farRightPost)
-        self.assertEquals(farRightPost.GetVisibilityScore(), -1,
+    def test_InteractWithMedium_farRightPost(self):
+        farRightPost = Post(5, 0.85, "The poor are destroying society!")
+        self.leftUser.InteractWithMedium(farRightPost)
+        self.assertEquals(farRightPost.visibility_score, -1,
                           "LeftUser should vote against RightPost.")
-        self.centerUser.InteractWithPost(farRightPost)
-        self.assertEquals(farRightPost.GetVisibilityScore(), -2,
+        self.centerUser.InteractWithMedium(farRightPost)
+        self.assertEquals(farRightPost.visibility_score, -2,
                           "CenterUser should vote against farRightPost.")
-        self.rightUser.InteractWithPost(farRightPost)
-        self.assertEquals(farRightPost.GetVisibilityScore(), -2,
+        self.rightUser.InteractWithMedium(farRightPost)
+        self.assertEquals(farRightPost.visibility_score, -2,
                           "RightUser should ignore farRightPost.")
-        pass
+
+    def test_InteractWithMedium_votingTwice(self):
+        medium = Medium(1, 0.)
+        self.centerUser.InteractWithMedium(medium)
+        self.assertEquals(medium.visibility_score, 1)
+        self.centerUser.InteractWithMedium(medium)
+        self.assertEquals(medium.visibility_score, 1,
+                          "User shoud not be allowed to vote twice.")
 
 if __name__ == '__main__':
     unittest.main()
