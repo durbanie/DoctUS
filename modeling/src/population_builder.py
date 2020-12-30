@@ -1,7 +1,9 @@
-# A class which builds a population of Users.
+# A class which builds a population of Users with extremely simple properties.
+# The population is focused entirely on voting based on political position,
 
 from medium import Medium
 from user import User
+from voting.low_discourse import LowDiscourse
 from numpy.random import Generator, PCG64
 
 class PopulationBuilder:
@@ -13,11 +15,12 @@ class PopulationBuilder:
     def num_users(self):
         return self._num_users
 
-    def CreatePopulation(self, alpha, beta, affinity, tolerance):
+    def CreatePopulation(self, alpha, beta, affinity=0.01, tolerance=0.01):
         users = []
         user_biases = self._generator.beta(alpha, beta, self.num_users) * 2 - 1
+        model = LowDiscourse(affinity, tolerance)
         for id, bias in enumerate(user_biases):
-            users.append(User(id, bias, affinity, tolerance))
+            users.append(User(id, bias, model))
         return users
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@ class User:
     This class represents a user who interacts with the Forum by subscribing to
     Boards, making Posts, and voting.
     """
-    def __init__(self, id, political_bias, affinity_range, tolerance_range):
+    def __init__(self, id, political_bias, interaction_model=None):
         """
         Constructor used to create a new instance of a User.
 
@@ -15,17 +15,12 @@ class User:
             political_bias: A `float` between -1. and 1. defining the users
                 political biases on the U.S.-centric spectrum, with -1. being
                 far left and 1. being far right.
-            affinity_range: A `float` (>0. and <1.) defining the user's range of
-                acceptance for voting for like-minded posts/comments.
-            tolerance_range: A `float` defining the user's tolerance for
-                dissent. Users may vote against posts or comments beyond this
-                range. For consistency, this must be greater than their
-                affinity_range.
+            interaction_model: A model for how users interact with media (i.e.
+                vote for, against, or ignore).
         """
         self._id = id
         self._political_bias = political_bias
-        self._affinity_range = affinity_range
-        self._tolerance_range = tolerance_range
+        self._interaction_model = interaction_model
 
     @property
     def id(self):
@@ -46,13 +41,11 @@ class User:
         Args:
             media: The `Media` that this user will vote on.
         """
+        # Make sure the model is defined. If not, just ignore the post (i.e. the
+        # lurker strategy).
+        if self._interaction_model is None:
+            return
 
         # Don't let the user vote more than once.
         if not media.HasUserVoted(self.id):
-            political_difference = abs(
-                media.political_bias - self.political_bias)
-            if political_difference < self._affinity_range:
-                media.VoteFor(self.id)
-            if political_difference > self._tolerance_range:
-                media.VoteAgainst(self.id)
-
+            self._interaction_model.ModelInteraction(self, media)
